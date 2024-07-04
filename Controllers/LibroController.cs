@@ -12,10 +12,14 @@ namespace WebApplication5.Controllers
     public class LibroController : ControllerBase
     {
         private readonly ILibrosRepository _librosRepository;
+        private readonly IAutorRepository _autorRepository;
+        private readonly IGeneroRepository _generoRepository;
 
-        public LibroController(ILibrosRepository librosRepository)
+        public LibroController(ILibrosRepository librosRepository, IAutorRepository autorRepository, IGeneroRepository generoRepository)
         {
             _librosRepository = librosRepository;
+            _autorRepository = autorRepository;
+            _generoRepository = generoRepository;
         }
 
         [HttpGet]
@@ -23,7 +27,42 @@ namespace WebApplication5.Controllers
         {
             var libros = await _librosRepository.GetLibrosAsync();
 
-            return Ok(libros);
+            List<LibrosMostrarDto> librosMostrarDtos = new List<LibrosMostrarDto>();
+
+            List<Autor> lAUtores = await _autorRepository.GetAutoressAsync();
+            List<Genero> lGeneros = await _generoRepository.GetGenerosAsync();
+
+            foreach (Libro l in libros){
+
+                var mostrarlibroDto = new LibrosMostrarDto();
+                mostrarlibroDto.Isbn = l.Isbn;
+                mostrarlibroDto.Titulo = l.Titulo;
+                mostrarlibroDto.FechaPublicacion = l.FechaPublicacion;
+
+                foreach (Autor o in lAUtores)
+                {
+                    if ((o.IdAutor == l.AutorId))
+                    { 
+                        {
+                            mostrarlibroDto.nombreAutor = o.Nombre;
+                        };                        
+                    }
+                }
+
+                foreach (Genero g in lGeneros)
+                {
+                    if ((g.IdGenero == l.GeneroId))
+                    {
+                        {
+                            mostrarlibroDto.nombreGenero = g.Nombre;
+                        };
+                    }
+                }
+                librosMostrarDtos.Add(mostrarlibroDto);
+            }
+
+
+            return Ok(librosMostrarDtos);
         }
 
         [HttpGet("/{ISBN}")]

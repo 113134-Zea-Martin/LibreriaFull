@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nuevo Libro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1>Crear Nuevo Libro</h1>
+        <form id="formCrearLibro">
+            <div class="mb-3">
+                <label for="isbnInput" class="form-label">#ISBN</label>
+                <input type="text" class="form-control" id="isbnInput" placeholder="Ingrese el ISBN del libro" required>
+            </div>
+            <div class="mb-3">
+                <label for="tituloInput" class="form-label">Título</label>
+                <input type="text" class="form-control" id="tituloInput" placeholder="Ingrese el título del libro"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="fechaInput" class="form-label">Fecha de Publicación</label>
+                <input type="date" class="form-control" id="fechaInput" required>
+            </div>
+            <div class="mb-3">
+                <label for="autorSelect" class="form-label">Autor</label>
+                <select class="form-select" id="autorSelect" required>
+                    <option value="">Seleccione un autor</option>
+                    <!-- Opciones de autor se cargarán dinámicamente -->
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="generoSelect" class="form-label">Género</label>
+                <select class="form-select" id="generoSelect" required>
+                    <option value="">Seleccione un género</option>
+                    <!-- Opciones de género se cargarán dinámicamente -->
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Libro</button>
+            <a href="listado.html" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('https://localhost:7024/api/Autor')
+                .then(response => response.json())
+                .then(data => {
+                    const autorSelect = document.getElementById('autorSelect');
+                    data.forEach(autor => {
+                        autorSelect.innerHTML += `<option value="${autor.id}">${autor.nombre}</option>`;
+                    });
+                })
+                .catch(error => console.error('Error al obtener los autores:', error));
+
+            // Cargar opciones de géneros
+            fetch('https://localhost:7024/api/Generos')
+                .then(response => response.json())
+                .then(data => {
+                    const generoSelect = document.getElementById('generoSelect');
+                    data.forEach(genero => {
+                        generoSelect.innerHTML += `<option value="${genero.idGenero}">${genero.nombre}</option>`;
+                    });
+                })
+                .catch(error => console.error('Error al obtener los géneros:', error));
+        });
+
+
+    </script>
+
+    <script>
+        function Guardar() {
+            const isbnElement = document.getElementById("isbnInput")
+            const tituloElemt = document.getElementById("tituloInput")
+            const fechaElement = document.getElementById("fechaInput")
+            const autorElement = document.getElementById("autorSelect")
+            const generoElement = document.getElementById("generoSelect")
+
+            fetch("https://localhost:7024/api/Libro", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    isbn: isbnElement.value,
+                    titulo: tituloElemt.value,
+                    fechaPublicacion:fechaElement.value,
+                    autorId:tituloElemt.value,
+                    generoId:tituloElemt.value
+                })
+            })
+            .then(response => response.json())
+            .then(response => {
+                console.log(response)
+            })
+        }
+    </script>
+
+
+</body>
+
+</html>
